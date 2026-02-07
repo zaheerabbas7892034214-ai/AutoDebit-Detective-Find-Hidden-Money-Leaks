@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.zaheer.autodebitdetective.presentation.theme.AutoDebitDetectiveTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,13 +36,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         text = "Welcome to $name!",
         modifier = modifier
     )
-}
-
-@Composable
-fun AutoDebitDetectiveTheme(content: @Composable () -> Unit) {
-    MaterialTheme {
-        content()
-    }
 }
 
 @Preview(showBackground = true)
