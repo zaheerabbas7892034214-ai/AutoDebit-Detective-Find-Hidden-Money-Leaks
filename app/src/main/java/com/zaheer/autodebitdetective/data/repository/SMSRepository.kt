@@ -7,6 +7,7 @@ import com.zaheer.autodebitdetective.domain.model.Transaction
 import com.zaheer.autodebitdetective.domain.usecase.ScanSMSUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -56,7 +57,8 @@ class SMSRepository(
     }
 
     private suspend fun getExistingHashes(): Set<String> = withContext(Dispatchers.IO) {
-        kotlinx.coroutines.flow.first(transactionDao.getAllTransactions())
+        transactionDao.getAllTransactions()
+            .first()
             .map { it.rawSnippetHash }
             .toSet()
     }

@@ -41,7 +41,7 @@ class BillingRepository(
         try {
             billingClient = client
             
-            kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
+            suspendCancellableCoroutine { continuation ->
                 client.startConnection(object : BillingClientStateListener {
                     override fun onBillingSetupFinished(billingResult: BillingResult) {
                         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {

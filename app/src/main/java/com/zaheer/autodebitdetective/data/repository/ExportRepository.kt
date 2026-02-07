@@ -67,7 +67,8 @@ class ExportRepository(private val context: Context) {
 
     suspend fun exportRecurringToPDF(
         recurringItems: List<RecurringItem>,
-        fileName: String? = null
+        fileName: String? = null,
+        maxItemsPerPage: Int = 30
     ): Result<File> = withContext(Dispatchers.IO) {
         try {
             val pdfFileName = fileName ?: generateFileName("recurring", "pdf")
@@ -108,7 +109,7 @@ class ExportRepository(private val context: Context) {
             var currentPage = page
             var currentCanvas = canvas
 
-            recurringItems.take(20).forEach { item ->
+            recurringItems.forEach { item ->
                 if (yPosition > 800) {
                     pdfDocument.finishPage(currentPage)
                     currentPage = pdfDocument.startPage(pageInfo)
