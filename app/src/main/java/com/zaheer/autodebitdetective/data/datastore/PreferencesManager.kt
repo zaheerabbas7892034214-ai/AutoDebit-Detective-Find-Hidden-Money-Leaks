@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -27,12 +28,16 @@ class PreferencesManager(private val context: Context) {
         private val ALERT_DAYS_BEFORE = intPreferencesKey("alert_days_before")
         private val THEME_MODE = stringPreferencesKey("theme_mode")
         private val EXPORT_FORMAT = stringPreferencesKey("export_format")
+        private val LARGE_CHARGE_THRESHOLD = doublePreferencesKey("large_charge_threshold")
+        private val AUTO_LOCK_TIMEOUT = intPreferencesKey("auto_lock_timeout")
+        private val LAST_UNLOCK_TIME = longPreferencesKey("last_unlock_time")
+        private val PIN_HASH = stringPreferencesKey("pin_hash")
     }
 
-    val alertEnabled: Flow<Boolean> = context.dataStore.data
+    val alertsEnabled: Flow<Boolean> = context.dataStore.data
         .map { preferences -> preferences[ALERT_ENABLED] ?: true }
 
-    val notificationPrivacy: Flow<Boolean> = context.dataStore.data
+    val hideNotificationContent: Flow<Boolean> = context.dataStore.data
         .map { preferences -> preferences[NOTIFICATION_PRIVACY] ?: false }
 
     val appLockEnabled: Flow<Boolean> = context.dataStore.data
@@ -58,6 +63,18 @@ class PreferencesManager(private val context: Context) {
 
     val exportFormat: Flow<String> = context.dataStore.data
         .map { preferences -> preferences[EXPORT_FORMAT] ?: "csv" }
+
+    val largeChargeThreshold: Flow<Double> = context.dataStore.data
+        .map { preferences -> preferences[LARGE_CHARGE_THRESHOLD] ?: 5000.0 }
+
+    val autoLockTimeout: Flow<Int> = context.dataStore.data
+        .map { preferences -> preferences[AUTO_LOCK_TIMEOUT] ?: 5 }
+
+    val lastUnlockTime: Flow<Long> = context.dataStore.data
+        .map { preferences -> preferences[LAST_UNLOCK_TIME] ?: 0L }
+
+    val pinHash: Flow<String?> = context.dataStore.data
+        .map { preferences -> preferences[PIN_HASH] }
 
     suspend fun setAlertEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
@@ -120,6 +137,34 @@ class PreferencesManager(private val context: Context) {
     suspend fun setExportFormat(format: String) {
         context.dataStore.edit { preferences ->
             preferences[EXPORT_FORMAT] = format
+        }
+    }
+
+    suspend fun setLargeChargeThreshold(threshold: Double) {
+        context.dataStore.edit { preferences ->
+            preferences[LARGE_CHARGE_THRESHOLD] = threshold
+        }
+    }
+
+    suspend fun setAutoLockTimeout(minutes: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[AUTO_LOCK_TIMEOUT] = minutes
+        }
+    }
+
+    suspend fun setLastUnlockTime(timestamp: Long) {
+        context.dataStore.edit { preferences ->
+            preferences[LAST_UNLOCK_TIME] = timestamp
+        }
+    }
+
+    suspend fun setPinHash(hash: String?) {
+        context.dataStore.edit { preferences ->
+            if (hash != null) {
+                preferences[PIN_HASH] = hash
+            } else {
+                preferences.remove(PIN_HASH)
+            }
         }
     }
 
