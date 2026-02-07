@@ -10,6 +10,7 @@ import com.zaheer.autodebitdetective.domain.usecase.ValidateSubscriptionUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 
 class BillingRepository(
@@ -40,29 +41,25 @@ class BillingRepository(
         try {
             billingClient = client
             
-            var connectionResult: Result<Unit>? = null
-            
-            client.startConnection(object : BillingClientStateListener {
-                override fun onBillingSetupFinished(billingResult: BillingResult) {
-                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                        connectionResult = Result.success(Unit)
-                    } else {
-                        connectionResult = Result.failure(
-                            Exception("Billing setup failed: ${billingResult.debugMessage}")
-                        )
+            kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
+                client.startConnection(object : BillingClientStateListener {
+                    override fun onBillingSetupFinished(billingResult: BillingResult) {
+                        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                            continuation.resumeWith(Result.success(Unit))
+                        } else {
+                            continuation.resumeWith(Result.failure(
+                                Exception("Billing setup failed: ${billingResult.debugMessage}")
+                            ))
+                        }
                     }
-                }
 
-                override fun onBillingServiceDisconnected() {
-                    connectionResult = Result.failure(Exception("Billing service disconnected"))
-                }
-            })
-
-            while (connectionResult == null) {
-                kotlinx.coroutines.delay(100)
+                    override fun onBillingServiceDisconnected() {
+                        if (continuation.isActive) {
+                            continuation.resumeWith(Result.failure(Exception("Billing service disconnected")))
+                        }
+                    }
+                })
             }
-
-            connectionResult!!
         } catch (e: Exception) {
             Result.failure(e)
         }

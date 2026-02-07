@@ -10,6 +10,13 @@ import java.security.MessageDigest
 
 class ScanSMSUseCase(private val context: Context) {
 
+    companion object {
+        private val AMOUNT_REGEX = """(?:Rs\.?|INR|₹)\s*(\d+(?:,\d+)*(?:\.\d{2})?)""".toRegex(RegexOption.IGNORE_CASE)
+        private val AT_REGEX = """at\s+([A-Za-z0-9\s&.'-]+?)(?:\s+on|\s+for|\s+via|\.|\n|$)""".toRegex(RegexOption.IGNORE_CASE)
+        private val TO_REGEX = """to\s+([A-Za-z0-9\s&.'-]+?)(?:\s+on|\s+for|\s+via|\.|\n|$)""".toRegex(RegexOption.IGNORE_CASE)
+        private val DEBIT_KEYWORDS = listOf("debited", "debit", "spent", "paid", "payment", "purchase")
+    }
+
     suspend operator fun invoke(): Result<List<Transaction>> = withContext(Dispatchers.IO) {
         try {
             val transactions = mutableListOf<Transaction>()
@@ -54,17 +61,14 @@ class ScanSMSUseCase(private val context: Context) {
     }
 
     private fun parseTransactionFromSMS(body: String, address: String, timestamp: Long): Transaction? {
-        val amountRegex = """(?:Rs\.?|INR|₹)\s*(\d+(?:,\d+)*(?:\.\d{2})?)""".toRegex(RegexOption.IGNORE_CASE)
-        val debitKeywords = listOf("debited", "debit", "spent", "paid", "payment", "purchase")
-
         val lowerBody = body.lowercase()
-        val containsDebitKeyword = debitKeywords.any { lowerBody.contains(it) }
+        val containsDebitKeyword = DEBIT_KEYWORDS.any { lowerBody.contains(it) }
 
         if (!containsDebitKeyword) {
             return null
         }
 
-        val amountMatch = amountRegex.find(body)
+        val amountMatch = AMOUNT_REGEX.find(body)
         val amount = amountMatch?.groupValues?.get(1)?.replace(",", "")?.toDoubleOrNull() ?: return null
 
         val merchant = extractMerchantName(body, address)
@@ -80,15 +84,12 @@ class ScanSMSUseCase(private val context: Context) {
     }
 
     private fun extractMerchantName(body: String, address: String): String {
-        val atRegex = """at\s+([A-Za-z0-9\s&.'-]+?)(?:\s+on|\s+for|\s+via|\.|\n|$)""".toRegex(RegexOption.IGNORE_CASE)
-        val toRegex = """to\s+([A-Za-z0-9\s&.'-]+?)(?:\s+on|\s+for|\s+via|\.|\n|$)""".toRegex(RegexOption.IGNORE_CASE)
-
-        val atMatch = atRegex.find(body)
+        val atMatch = AT_REGEX.find(body)
         if (atMatch != null) {
             return atMatch.groupValues[1].trim()
         }
 
-        val toMatch = toRegex.find(body)
+        val toMatch = TO_REGEX.find(body)
         if (toMatch != null) {
             return toMatch.groupValues[1].trim()
         }

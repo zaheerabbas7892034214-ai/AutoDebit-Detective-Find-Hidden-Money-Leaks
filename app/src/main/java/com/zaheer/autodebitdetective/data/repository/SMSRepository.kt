@@ -35,11 +35,10 @@ class SMSRepository(
             if (result.isSuccess) {
                 val transactions = result.getOrNull() ?: emptyList()
                 
-                val existingHashes = transactionDao.getAllTransactions()
-                    .map { list -> list.map { it.rawSnippetHash }.toSet() }
+                val existingHashes = getExistingHashes()
                 
                 val newTransactions = transactions.filter { txn ->
-                    !existingHashes.first().contains(txn.rawSnippetHash)
+                    !existingHashes.contains(txn.rawSnippetHash)
                 }
 
                 if (newTransactions.isNotEmpty()) {
@@ -54,6 +53,12 @@ class SMSRepository(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    private suspend fun getExistingHashes(): Set<String> = withContext(Dispatchers.IO) {
+        kotlinx.coroutines.flow.first(transactionDao.getAllTransactions())
+            .map { it.rawSnippetHash }
+            .toSet()
     }
 
     suspend fun insertTransaction(transaction: Transaction): Result<Unit> = withContext(Dispatchers.IO) {

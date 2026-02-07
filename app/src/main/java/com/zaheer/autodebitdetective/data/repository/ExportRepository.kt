@@ -105,24 +105,28 @@ class ExportRepository(private val context: Context) {
 
             paint.isFakeBoldText = false
 
+            var currentPage = page
+            var currentCanvas = canvas
+
             recurringItems.take(20).forEach { item ->
                 if (yPosition > 800) {
-                    pdfDocument.finishPage(page)
-                    val newPage = pdfDocument.startPage(pageInfo)
+                    pdfDocument.finishPage(currentPage)
+                    currentPage = pdfDocument.startPage(pageInfo)
+                    currentCanvas = currentPage.canvas
                     yPosition = 50f
                 }
 
                 val nextDate = SimpleDateFormat("MMM dd", Locale.getDefault())
                     .format(Date(item.nextPredictedEpoch))
 
-                canvas.drawText(item.merchant.take(20), 50f, yPosition, paint)
-                canvas.drawText("₹${String.format("%.2f", item.avgAmount)}", 250f, yPosition, paint)
-                canvas.drawText(item.cadenceType.displayName, 350f, yPosition, paint)
-                canvas.drawText(nextDate, 450f, yPosition, paint)
+                currentCanvas.drawText(item.merchant.take(20), 50f, yPosition, paint)
+                currentCanvas.drawText("₹${String.format("%.2f", item.avgAmount)}", 250f, yPosition, paint)
+                currentCanvas.drawText(item.cadenceType.displayName, 350f, yPosition, paint)
+                currentCanvas.drawText(nextDate, 450f, yPosition, paint)
                 yPosition += 20f
             }
 
-            pdfDocument.finishPage(page)
+            pdfDocument.finishPage(currentPage)
 
             FileOutputStream(file).use { outputStream ->
                 pdfDocument.writeTo(outputStream)

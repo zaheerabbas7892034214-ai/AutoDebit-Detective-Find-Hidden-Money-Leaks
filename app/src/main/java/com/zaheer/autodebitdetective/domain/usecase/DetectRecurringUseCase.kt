@@ -59,8 +59,8 @@ class DetectRecurringUseCase {
         val days = avgIntervalMillis / (1000 * 60 * 60 * 24)
 
         return when {
-            days in 5..9 -> CadenceType.WEEKLY
-            days in 25..35 -> CadenceType.MONTHLY
+            days in 6..8 -> CadenceType.WEEKLY
+            days in 27..33 -> CadenceType.MONTHLY
             days in 85..95 -> CadenceType.QUARTERLY
             days in 350..380 -> CadenceType.YEARLY
             else -> CadenceType.UNKNOWN

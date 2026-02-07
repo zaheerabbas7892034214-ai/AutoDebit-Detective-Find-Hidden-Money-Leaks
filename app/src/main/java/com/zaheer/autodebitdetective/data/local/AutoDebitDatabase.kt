@@ -43,7 +43,6 @@ abstract class AutoDebitDatabase : RoomDatabase() {
                 AutoDebitDatabase::class.java,
                 DATABASE_NAME
             )
-                .fallbackToDestructiveMigration()
                 .build()
         }
     }
