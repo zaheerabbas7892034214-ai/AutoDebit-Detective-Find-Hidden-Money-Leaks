@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AutoDebit Detective</string>
+    
+    <!-- Permissions -->
+    <string name="permission_sms_title">SMS Permission Required</string>
+    <string name="permission_sms_description">This app needs SMS access to scan your messages for subscription and recurring payment information.</string>
+    <string name="permission_notification_title">Notification Permission Required</string>
+    <string name="permission_notification_description">Allow notifications to receive alerts about upcoming payments and subscription renewals.</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="permission_grant">Grant Permission</string>
+    <string name="permission_cancel">Cancel</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_subscriptions">Subscriptions</string>
+    <string name="nav_analytics">Analytics</string>
+    <string name="nav_settings">Settings</string>
+    
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="sort">Sort</string>
+    <string name="loading">Loading…</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="no_data">No data available</string>
+    
+    <!-- Currency -->
+    <string name="currency_symbol">₹</string>
+    
+    <!-- File Provider -->
+    <string name="file_provider_authority">com.zaheer.autodebitdetective.fileprovider</string>
+    
+    <!-- Errors -->
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_database">Database error occurred.</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_app_logo">App Logo</string>
+    <string name="cd_back_button">Back</string>
+    <string name="cd_menu_button">Menu</string>
+    <string name="cd_search_button">Search</string>
+    <string name="cd_filter_button">Filter</string>
+    <string name="cd_delete_button">Delete</string>
+</resources>
