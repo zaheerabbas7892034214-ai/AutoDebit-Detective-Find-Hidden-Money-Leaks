@@ -26,7 +26,7 @@ class RecurringScanWorker(
         try {
             Log.d(TAG, "Starting recurring scan...")
             
-            val allTransactions = transactionDao.getAllTransactions()
+            val allTransactions = transactionDao.getAllTransactionsList()
             Log.d(TAG, "Analyzing ${allTransactions.size} transactions")
             
             val domainTransactions = allTransactions.map { entity ->

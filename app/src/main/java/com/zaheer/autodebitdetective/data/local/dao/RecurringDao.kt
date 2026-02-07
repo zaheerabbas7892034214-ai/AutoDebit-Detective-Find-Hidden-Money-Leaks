@@ -13,18 +13,21 @@ import kotlinx.coroutines.flow.Flow
 interface RecurringDao {
     @Query("SELECT * FROM recurring_items ORDER BY nextPredictedEpoch ASC")
     fun getAllRecurring(): Flow<List<RecurringEntity>>
+    
+    @Query("SELECT * FROM recurring_items ORDER BY nextPredictedEpoch ASC")
+    suspend fun getAllRecurringItems(): List<RecurringEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRecurring(recurring: RecurringEntity): Long
+    suspend fun insert(recurring: RecurringEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRecurringItems(items: List<RecurringEntity>)
+    suspend fun insertAll(items: List<RecurringEntity>)
 
     @Update
-    suspend fun updateRecurring(recurring: RecurringEntity)
+    suspend fun update(recurring: RecurringEntity)
 
     @Delete
-    suspend fun deleteRecurring(recurring: RecurringEntity)
+    suspend fun delete(recurring: RecurringEntity)
 
     @Query("DELETE FROM recurring_items")
     suspend fun deleteAll()

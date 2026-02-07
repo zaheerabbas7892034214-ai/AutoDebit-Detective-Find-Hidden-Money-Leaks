@@ -33,7 +33,7 @@ sealed class BiometricAvailability {
     data object SecurityNotEnabled : BiometricAvailability()
 }
 
-class BiometricManager(
+class AppBiometricManager(
     private val context: Context
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -234,7 +234,7 @@ class BiometricManager(
     }
     
     companion object {
-        private const val TAG = "BiometricManager"
+        private const val TAG = "AppBiometricManager"
         
         private const val AUTHENTICATORS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL

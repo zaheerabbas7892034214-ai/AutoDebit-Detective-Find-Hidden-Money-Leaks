@@ -31,7 +31,7 @@ abstract class AutoDebitDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AutoDebitDatabase? = null
 
-        fun getInstance(context: Context): AutoDebitDatabase {
+        fun getDatabase(context: Context): AutoDebitDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
             }
