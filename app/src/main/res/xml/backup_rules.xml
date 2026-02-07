@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude DataStore preferences from backup -->
+    <exclude domain="sharedpref" path="datastore" />
+    
+    <!-- Exclude database files from backup for security -->
+    <exclude domain="database" path="." />
+    
+    <!-- Include app settings -->
+    <include domain="file" path="." />
+</full-backup-content>
