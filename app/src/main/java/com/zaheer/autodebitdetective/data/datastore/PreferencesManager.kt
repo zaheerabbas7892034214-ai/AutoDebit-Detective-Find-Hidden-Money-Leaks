@@ -76,13 +76,13 @@ class PreferencesManager(private val context: Context) {
     val pinHash: Flow<String?> = context.dataStore.data
         .map { preferences -> preferences[PIN_HASH] }
 
-    suspend fun setAlertEnabled(enabled: Boolean) {
+    suspend fun setAlertsEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[ALERT_ENABLED] = enabled
         }
     }
 
-    suspend fun setNotificationPrivacy(enabled: Boolean) {
+    suspend fun setHideNotificationContent(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[NOTIFICATION_PRIVACY] = enabled
         }

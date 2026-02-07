@@ -5,7 +5,9 @@ import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import com.zaheer.autodebitdetective.domain.model.RecurringItem
 import com.zaheer.autodebitdetective.domain.model.Transaction
+import com.zaheer.autodebitdetective.presentation.export.ExportHistoryItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -13,7 +15,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ExportRepository(private val context: Context) {
+class ExportRepository(
+    private val context: Context,
+    private val recurringRepository: RecurringRepository
+) {
 
     suspend fun exportTransactionsToCSV(
         transactions: List<Transaction>,
@@ -137,6 +142,41 @@ class ExportRepository(private val context: Context) {
             Result.success(file)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun exportToCSV(): Result<File> {
+        val items = recurringRepository.getAllRecurringItems().first()
+        return exportRecurringToCSV(items)
+    }
+
+    suspend fun exportToPDF(): Result<File> {
+        val items = recurringRepository.getAllRecurringItems().first()
+        return exportRecurringToPDF(items)
+    }
+
+    suspend fun getExportHistory(): List<ExportHistoryItem> = withContext(Dispatchers.IO) {
+        try {
+            val exportDir = context.getExternalFilesDir(null)
+            val files = exportDir?.listFiles { file ->
+                file.name.startsWith("recurring_") || file.name.startsWith("transactions_")
+            } ?: emptyArray()
+            
+            files.sortedByDescending { it.lastModified() }.map { file ->
+                val format = when {
+                    file.name.endsWith(".csv") -> "CSV"
+                    file.name.endsWith(".pdf") -> "PDF"
+                    else -> "Unknown"
+                }
+                ExportHistoryItem(
+                    fileName = file.name,
+                    format = format,
+                    timestamp = file.lastModified(),
+                    filePath = file.absolutePath
+                )
+            }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
